@@ -109,8 +109,16 @@
     const abre = (t) => tablas.forEach((x) => { const si = x === t; x.classList.toggle('es-activa', si); x.querySelector('button').setAttribute('aria-expanded', si); });
     tablas.forEach((t) => {
       const b = t.querySelector('button');
-      b.addEventListener('click', () => abre(t));
-      b.addEventListener('focus', () => abre(t));
+      // en móvil, al cerrarse la de arriba todo sube: se compensa el scroll para que la elegida no se mueva bajo el dedo
+      const elige = () => {
+        if (t.classList.contains('es-activa')) return;
+        const antes = b.getBoundingClientRect().top;
+        abre(t);
+        const dif = b.getBoundingClientRect().top - antes;
+        if (Math.abs(dif) > 1) window.scrollBy({ top: dif, behavior: 'instant' });
+      };
+      b.addEventListener('click', elige);
+      b.addEventListener('focus', elige);
     });
   }
 
