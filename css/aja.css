@@ -12,7 +12,7 @@
   --t-lama: 'Sofia XC', 'Arial Narrow', sans-serif;
   --t-texto: 'Schibsted', system-ui, sans-serif;
   --mx: clamp(20px, 5vw, 72px);
-  --cab: 76px;
+  --cab: 84px;
   --junta: 6px;           /* junta entre lamas */
   --sal: cubic-bezier(.16, 1, .3, 1);
 }
@@ -54,7 +54,7 @@ p { margin: 0; }
 /* cabecera */
 .cab { position: fixed; inset: 0 0 auto; z-index: 50; height: var(--cab); display: flex; align-items: center; gap: 28px; padding: 0 var(--mx); background: var(--basalto); color: var(--cal-txt); border-bottom: 1px solid rgba(243, 242, 238, .1); }
 .cab__marca { display: block; color: var(--cal); }
-.logo { height: 38px; width: auto; overflow: visible; }
+.logo { display: block; height: 66px; width: auto; }
 .cab__nav { display: flex; gap: 24px; margin-left: auto; font-size: .94rem; }
 .cab__nav a { text-decoration: none; color: var(--cal-txt-2); padding: 6px 0; transition: color .2s; }
 .cab__nav a:hover { color: var(--cal); }
@@ -233,7 +233,7 @@ html:not(.con-js) .visor__control { display: none; }
 
 /* pie */
 .pie { background: var(--basalto); color: var(--cal-txt-2); padding: 72px var(--mx) 56px; display: grid; grid-template-columns: auto 1fr auto; gap: 28px 56px; align-items: start; }
-.logo--pie { height: 60px; color: var(--cal); }
+.logo--pie { height: 120px; }
 .pie__lema { grid-column: 1; font: 800 1.2rem/1 var(--t-lama); letter-spacing: .1em; text-transform: uppercase; color: var(--ocre); }
 .pie__datos { grid-column: 2; grid-row: 1 / span 2; display: grid; gap: 8px; font-size: .92rem; }
 .pie a { color: var(--cal); }
@@ -262,11 +262,11 @@ html:not(.con-js) .visor__control { display: none; }
 }
 /* móvil */
 @media (max-width: 700px) {
-  :root { --cab: 62px; --mx: 20px; --junta: 4px; }
+  :root { --cab: 68px; --mx: 20px; --junta: 4px; }
   body { font-size: 1.03rem; }
   .cab { gap: 12px; }
-  .logo { height: 30px; }
-  .logo--pie { height: 46px; }
+  .logo { height: 54px; }
+  .logo--pie { height: 100px; }
   .idiomas a { width: 36px; height: 36px; font-size: .98rem; }
   .cab__wa { display: none; }
   .portada { padding-top: calc(var(--cab) + 36px); gap: 40px; }
