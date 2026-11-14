@@ -112,9 +112,10 @@
       // en móvil, al cerrarse la de arriba todo sube: se compensa el scroll para que la elegida no se mueva bajo el dedo
       const elige = () => {
         if (t.classList.contains('es-activa')) return;
-        const antes = b.getBoundingClientRect().top;
+        // se mide la lama entera (no el botón, que en escritorio cambia de sitio dentro de ella)
+        const antes = t.getBoundingClientRect().top;
         abre(t);
-        const dif = b.getBoundingClientRect().top - antes;
+        const dif = t.getBoundingClientRect().top - antes;
         if (Math.abs(dif) > 1) window.scrollBy({ top: dif, behavior: 'instant' });
       };
       b.addEventListener('click', elige);
