@@ -309,3 +309,22 @@ html:not(.con-js) .visor__control { display: none; }
   .barra a:first-child { background: var(--rojo); color: #fff; }
   .barra a:last-child { color: var(--cal); box-shadow: inset 0 0 0 1.5px rgba(243, 242, 238, .45); }
 }
+
+/* síguenos en obra (Instagram) · 16-nov-2026, a petición del cliente */
+.insta { background: var(--basalto); color: var(--cal-txt); padding: clamp(80px, 11vw, 150px) var(--mx); }
+.insta :focus-visible { outline-color: var(--cal); }
+.insta__cab { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px clamp(40px, 6vw, 110px); align-items: end; }
+.insta__cab h2 { grid-column: 1 / -1; }
+.insta__cab p { max-width: 52ch; font-size: 1.1rem; color: var(--cal-txt-2); }
+.insta__rejilla { list-style: none; margin: clamp(40px, 6vw, 72px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--junta); }
+.insta__post a { display: block; color: inherit; text-decoration: none; }
+.insta__foto img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; transition: filter .3s var(--sal); }
+.insta__post a:hover .insta__foto img { filter: brightness(1.08); }
+.insta__pie { display: block; padding: 12px 2px 18px; font-size: .96rem; line-height: 1.4; color: var(--cal-txt-2); }
+.insta__pie time { display: block; font-weight: 700; color: var(--ocre); font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) {
+  .insta__cab { grid-template-columns: 1fr; }
+  .insta__cab .boton { justify-self: start; }
+  .insta__rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insta__pie { font-size: .9rem; padding-bottom: 14px; }
+}
