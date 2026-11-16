@@ -68,6 +68,10 @@ p { margin: 0; }
 .portada { background: var(--basalto); color: var(--cal-txt); padding: calc(var(--cab) + clamp(40px, 7vh, 88px)) var(--mx) clamp(48px, 8vh, 96px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .92fr); gap: clamp(32px, 5vw, 88px); align-items: center; min-height: 100svh; }
 .portada h1 { font-size: clamp(3.2rem, 6.2vw, 5.8rem); text-transform: uppercase; max-width: 13ch; letter-spacing: -.01em; }
 .portada__sub { margin-top: 26px; max-width: 44ch; font-size: clamp(1.08rem, 1.35vw, 1.24rem); color: var(--cal-txt-2); }
+.portada__sub + .portada__sub { margin-top: 14px; }
+/* lema del cliente: ocre, con la lama roja delante */
+.portada__cierre { margin-top: 22px; display: flex; align-items: center; gap: 12px; max-width: 44ch; font-weight: 600; font-size: clamp(1.02rem, 1.25vw, 1.14rem); color: var(--ocre); }
+.portada__cierre::before { content: ''; flex: none; width: 6px; align-self: stretch; min-height: 22px; background: var(--rojo); }
 .portada__acciones { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 12px; }
 
 /* el tejado de lamas con la obra dentro */
