@@ -74,7 +74,8 @@ button.boton { font-family: var(--sans); }
 .cabecera--fila { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 32px; }
 
 /* ---------- entradas: titulares línea a línea con desenfoque (Loam) y bloques que suben ---------- */
-.con-js [data-lineas]:not(.partido) { opacity: 0; }
+.con-js [data-lineas]:not(.partido) { opacity: 0; animation: muestra .6s ease 2.6s forwards; }   /* si el JS tarda, se ven igual */
+@keyframes muestra { to { opacity: 1; } }
 [data-lineas] .linea { display: block; overflow: hidden; padding: 0 .1em .14em 0; margin-bottom: -.14em; }
 [data-lineas] .linea > span { display: block; }
 .con-js [data-lineas] .linea > span { transform: translateY(105%); opacity: 0; filter: blur(8px); transition: transform 1.25s var(--sal), opacity 1s ease, filter 1.3s ease; transition-delay: calc(var(--l, 0) * 110ms); }
@@ -126,7 +127,7 @@ button.boton { font-family: var(--sans); }
 
 /* ---------- portada: varias fotos que pasan despacio ---------- */
 .portada { position: relative; min-height: 100svh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; background: var(--noche); }
-.portada__foto { position: absolute; inset: 0; }
+.portada__foto { position: absolute; inset: 0; background: var(--noche) center / cover no-repeat; }   /* avance borroso mientras carga la foto */
 .portada__diapo { position: absolute; inset: 0; opacity: 0; transition: opacity 2s ease; }
 .portada__diapo.es-actual, html:not(.con-js) .portada__diapo:first-child { opacity: 1; }
 .portada__diapo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; transform: scale(1.08); transition: transform 9s cubic-bezier(.2, .6, .2, 1); }
@@ -141,11 +142,12 @@ button.boton { font-family: var(--sans); }
 .portada h1 em { color: var(--oro-claro); }
 .portada__lema { margin-top: 30px; font-size: clamp(1.02rem, 1.3vw, 1.15rem); color: rgba(255, 255, 255, .9); max-width: 40ch; font-weight: 300; }
 .portada__acciones { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 12px; }
-.con-js .portada__texto > :not(h1) { opacity: 0; transform: translateY(18px); animation: sube 1.2s var(--sal) forwards; }
+.con-js .portada__texto > * { opacity: 0; transform: translateY(18px); animation: sube 1.2s var(--sal) forwards; }
+.con-js .portada h1 { filter: blur(6px); animation: sube 1.4s var(--sal) .25s forwards; }
 .con-js .portada__texto > .kicker { animation-delay: .1s; }
 .con-js .portada__texto > .portada__lema { animation-delay: .55s; }
 .con-js .portada__texto > .portada__acciones { animation-delay: .7s; }
-@keyframes sube { to { opacity: 1; transform: none; } }
+@keyframes sube { to { opacity: 1; transform: none; filter: blur(0); } }
 .portada__cuenta { position: absolute; z-index: 1; right: var(--mx); bottom: clamp(60px, 11vh, 130px); font: 300 1.2rem/1 var(--serif); color: rgba(255, 255, 255, .75); letter-spacing: .04em; }
 .portada__cuenta span { color: #fff; }
 

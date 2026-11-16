@@ -41,8 +41,7 @@
   const alPartir = () => {
     if (partidos) return; partidos = true;
     parteTodo();
-    requestAnimationFrame(() => requestAnimationFrame(() => $$('[data-lineas="ya"]').forEach((e) => e.classList.add('visto'))));
-    observa();
+    observa(titulares);
   };
   // se parte con las letras ya cargadas (si no, las líneas salen con las medidas de la letra de reserva)
   const cargas = document.fonts && document.fonts.load
@@ -54,12 +53,13 @@
   addEventListener('resize', () => { clearTimeout(tRes); tRes = setTimeout(() => { if (Math.abs(innerWidth - ancho) > 40) { ancho = innerWidth; parteTodo(); } }, 250); });
 
   /* ---------- apariciones al bajar ---------- */
-  function observa() {
-    const els = [...titulares.filter((e) => e.dataset.lineas !== 'ya'), ...$$('[data-r]')];
+  function observa(els) {
     if (!('IntersectionObserver' in window) || reduce) { els.forEach((e) => e.classList.add('visto')); return; }
     const io = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { x.target.classList.add('visto'); io.unobserve(x.target); } }), { rootMargin: '0px 0px -10% 0px', threshold: .05 });
     els.forEach((e) => io.observe(e));
   }
+
+  observa($$('[data-r]'));   // los bloques aparecen sin esperar a las letras
 
   /* ---------- paralaje leve en las fotos a sangre ---------- */
   const paras = $$('[data-paralaje] img');
