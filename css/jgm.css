@@ -300,6 +300,15 @@ html:not(.con-js) .visor__control { display: none; }
 .capitulo__n span::after { content: ''; width: 36px; height: 1px; background: currentColor; opacity: .6; }
 .capitulo h3 { font-size: clamp(3.1rem, 6.8vw, 6.8rem); font-weight: 300; line-height: .9; letter-spacing: -.035em; max-width: 11ch; }
 .capitulo__p { margin: 26px 0 34px; max-width: 42ch; color: rgba(255, 255, 255, .9); font-weight: 300; font-size: 1.08rem; }
+/* 17-nov: vídeo vertical del salón (en lugar de soldadura). Móvil: a sangre como las fotos. Ordenador: en un marco alto a la derecha */
+.capitulo__video video { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--noche); }
+@media (min-width: 801px) {
+  .capitulo--video { align-items: center; }
+  .capitulo--video .capitulo__video { inset: 8vh max(var(--mx), calc((100vw - var(--ancho)) / 2)) 8vh auto; aspect-ratio: 9 / 16; height: auto; max-width: 44vw; box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
+  .capitulo--video::after { background: linear-gradient(90deg, rgba(18, 15, 12, .5) 0%, rgba(18, 15, 12, 0) 60%); }
+  .capitulo--video .capitulo__texto { padding-top: var(--sec); padding-bottom: var(--sec); }
+  .capitulo--video .capitulo__texto > * { max-width: min(46%, 560px); }
+}
 
 /* ---------- nosotros ---------- */
 .nosotros { background: var(--lino); padding: var(--sec) var(--mx); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(36px, 7vw, 120px); align-items: center; }

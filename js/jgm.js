@@ -269,6 +269,17 @@
     io.observe(v);
   });
 
+  /* ---------- vídeo del salón (17-nov): se carga al acercarse y solo se reproduce mientras se ve ---------- */
+  $$('video[data-video]').forEach((v) => {
+    const carga = () => { if (v.getAttribute('src')) return; v.src = matchMedia('(max-width: 800px)').matches && v.dataset.srcM ? v.dataset.srcM : v.dataset.src; };
+    if (reduce) { v.controls = true; }
+    if (!('IntersectionObserver' in window)) { carga(); if (!reduce) v.play().catch(() => {}); return; }
+    new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) carga(); }, { rootMargin: '900px 0px' }).observe(v);
+    new IntersectionObserver((es) => {
+      if (es[0].isIntersecting) { carga(); if (!reduce) v.play().catch(() => {}); } else if (!v.paused) v.pause();
+    }, { threshold: 0.2 }).observe(v);
+  });
+
   /* ---------- formulario → correo del cliente (FormSubmit) ----------
      17-nov: las solicitudes llegan a su correo, en castellano, con el correo del visitante como «responder a».
      Si FormSubmit falla (o aún no está activado), se abre el correo del visitante con la solicitud escrita. */
