@@ -74,7 +74,8 @@ button.boton { font-family: var(--sans); }
 .cabecera--fila { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 32px; }
 
 /* ---------- entradas: titulares línea a línea con desenfoque (Loam) y bloques que suben ---------- */
-.con-js [data-lineas]:not(.partido) { opacity: 0; animation: muestra .6s ease 2.6s forwards; }   /* si el JS tarda, se ven igual */
+.con-js [data-lineas]:not(.partido) { opacity: 0; }
+.con-js:not(.js-ok) [data-lineas]:not(.partido) { animation: muestra .6s ease 2.6s forwards; }   /* si el JS no llega, se ven igual */
 @keyframes muestra { to { opacity: 1; } }
 [data-lineas] .linea { display: block; overflow: hidden; padding: 0 .1em .14em 0; margin-bottom: -.14em; }
 [data-lineas] .linea > span { display: block; }
@@ -184,14 +185,17 @@ button.boton { font-family: var(--sans); }
 @media (min-width: 1001px) { .obras__lista:not(.filtrada) > .obra:nth-child(3n + 2) { margin-top: 80px; } }
 
 .ficha { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: var(--marfil); color: var(--tinta); overflow: hidden; }
-.ficha[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); animation: fichaEntra .8s var(--sal); }
+.ficha[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); animation: fichaEntra .8s var(--sal); }
 @keyframes fichaEntra { from { opacity: 0; transform: translateY(30px); } }
 .ficha::backdrop { background: rgba(18, 15, 12, .55); }
 .ficha__barra { display: flex; align-items: center; gap: 16px; height: 66px; padding: 0 var(--mx); border-bottom: 1px solid var(--linea); background: var(--marfil); }
 .ficha__volver { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; font: 500 .7rem/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--tinta-2); min-height: 44px; }
 .ficha__volver .ico { transform: rotate(180deg); transition: transform .5s var(--io); }
 .ficha__volver:hover .ico { transform: rotate(180deg) translateX(4px); }
-.ficha__barra-t { margin: 0 auto; font: 400 1.25rem/1 var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity .4s; }
+.ficha__barra-t { flex: 1 1 0; min-width: 0; text-align: center; font: 400 1.25rem/1 var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity .4s; }
+.ficha__barra > * { min-width: 0; }
+.ficha__datos > * { min-width: 0; }
+.ficha__datos h2 { overflow-wrap: break-word; }
 .ficha.con-scroll .ficha__barra-t { opacity: 1; }
 .ficha__x { all: unset; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--linea); display: grid; place-items: center; font: 300 1.7rem/1 var(--serif); transition: background-color .4s, color .4s; }
 .ficha__x:hover { background: var(--tinta); color: var(--marfil); }
@@ -432,4 +436,78 @@ html:not(.con-js) .visor__control { display: none; }
   .barra a:first-child { background: var(--marfil); color: var(--tinta); }
   .barra a:last-child { color: var(--marfil); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35); }
   .barra .ico { width: 1.2em; height: 1.2em; }
+}
+
+/* ---------- 17-nov · fotos que llegan con fundido sobre su avance borroso ---------- */
+[data-lqip] { background-size: cover; background-position: center; background-repeat: no-repeat; }
+.con-js [data-lqip] img { opacity: 0; transition: opacity .8s ease; }
+.con-js .obra__foto[data-lqip] img { transition: opacity .8s ease, transform 1.5s var(--sal); }
+.con-js .marco-foto[data-lqip] img { transition: opacity .8s ease, transform 1.9s var(--sal); }
+.con-js [data-lqip] img.cargada { opacity: 1; }
+
+/* ---------- titulares sobre foto: más legibles ---------- */
+.portada h1, .local__texto h2, .capitulo h3 { text-shadow: 0 1px 2px rgba(0, 0, 0, .16), 0 10px 40px rgba(0, 0, 0, .32); }
+.portada__lema, .capitulo__p, .local__texto p, .kicker, .capitulo__n { text-shadow: 0 1px 14px rgba(0, 0, 0, .4); }
+
+/* ---------- móvil y pantallas táctiles: scroll ligero ---------- */
+@media (max-width: 800px), (pointer: coarse) {
+  .local__foto img, .capitulo__foto img { height: 100%; transform: none; will-change: auto; }
+  .cab.es-solida { background: rgba(27, 24, 21, .96); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .portada__diapo img { transform: none !important; transition: none !important; animation: none !important; }
+  .con-js .portada__texto > * { animation-duration: .9s; }
+  .con-js .portada h1 { animation-delay: .05s; filter: none; }
+  .con-js .portada__texto > .portada__lema { animation-delay: .25s; }
+  .con-js .portada__texto > .portada__acciones { animation-delay: .35s; }
+  .con-js [data-r] { transform: translateY(18px); }
+  .obra__abrir:hover .obra__foto img, .insta__rejilla a:hover img, .ficha__fotos button:hover img { transform: none; }
+}
+
+/* ---------- móvil: más aire y titulares sobre foto bien asentados ---------- */
+@media (max-width: 640px) {
+  :root { --mx: 24px; --sec: 108px; }
+  body { font-size: 1.0625rem; line-height: 1.8; }
+  .label { margin-bottom: 22px; }
+  .cabecera { margin-bottom: 52px; }
+  .cabecera h2, .nosotros__texto h2, .contacto__texto h2 { font-size: clamp(2.6rem, 11.6vw, 3.4rem); line-height: 1; }
+  .cabecera__p { margin-top: 20px; }
+  .cabecera--fila { gap: 30px; }
+  /* portada */
+  .portada__texto { padding-bottom: 60px; }
+  .kicker { margin-bottom: 20px; line-height: 1.6; }
+  .portada h1 { font-size: clamp(3rem, 14vw, 4.2rem); line-height: .97; letter-spacing: -.03em; }
+  .portada__lema { margin-top: 22px; }
+  .portada__acciones { margin-top: 30px; gap: 12px; }
+  /* intro */
+  .intro { padding-top: 100px; }
+  .intro__grande { font-size: 1.9rem; line-height: 1.26; }
+  .intro__p { margin-top: 30px; }
+  .intro__marca { margin-top: 60px; }
+  /* obras */
+  .obras { padding-top: 96px; }
+  .obras__lista { gap: 46px 14px; }
+  .obra__info { margin-top: 14px; gap: 5px; }
+  .obra__t { font-size: 1.27rem; line-height: 1.16; }
+  /* capítulos y local: la foto se oscurece por abajo para que el titular se lea siempre */
+  .capitulo::after, .local::after { background: linear-gradient(180deg, rgba(18, 15, 12, .3) 0%, rgba(18, 15, 12, .12) 30%, rgba(18, 15, 12, .5) 58%, rgba(18, 15, 12, .9) 100%); }
+  .capitulo__texto { padding-bottom: 68px; }
+  .capitulo__n { margin-bottom: 20px; }
+  .capitulo h3, .local__texto h2 { font-size: clamp(2.6rem, 11.6vw, 3.5rem); line-height: .99; letter-spacing: -.025em; }
+  .capitulo__p { margin: 20px 0 30px; font-size: 1.03rem; line-height: 1.7; }
+  .local__texto { padding-bottom: 64px; }
+  .local__texto p:not(.label) { margin-top: 18px; line-height: 1.7; }
+  /* resto */
+  .ficha-ad { margin-top: 26px; }
+  .tambien { padding-top: 84px; gap: 18px; }
+  .tambien ul { font-size: 1.45rem; line-height: 1.5; }
+  .nosotros { gap: 56px; }
+  .nosotros__texto h2 { margin-bottom: 30px; }
+  .nosotros__texto p:not(.label) + p { margin-top: 20px; }
+  .opinion { gap: 56px; }
+  .insta__rejilla { gap: 10px; }
+  .contacto { gap: 60px; }
+  .obra-form { gap: 32px; }
+  .pie { gap: 36px; }
+  .ficha__datos { margin: 40px auto 48px; gap: 30px; }
+  .ficha__tabla div { padding: 14px 0; }
+  .ficha__fotos { gap: 12px; }
 }

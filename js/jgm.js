@@ -5,7 +5,8 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  document.documentElement.classList.add('js-ok');
+  const esc =(s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
   /* ---------- cabecera: sólida al bajar; menú del móvil ---------- */
   const cab = $('[data-cab]'), menu = $('[data-menu]');
@@ -62,7 +63,8 @@
   observa($$('[data-r]'));   // los bloques aparecen sin esperar a las letras
 
   /* ---------- paralaje leve en las fotos a sangre ---------- */
-  const paras = $$('[data-paralaje] img');
+  // solo en ordenador: en el móvil el paralaje hace el scroll menos fluido
+  const paras = matchMedia('(min-width: 801px) and (pointer: fine)').matches ? $$('[data-paralaje] img') : [];
   if (paras.length && !reduce) {
     let pend = false;
     const mueve = () => {
@@ -82,23 +84,35 @@
   const portada = $('[data-portada]'), cuenta = $('[data-cuenta]');
   if (portada && !reduce) {
     const diapos = $$('.portada__diapo', portada);
-    const carga = () => $$('[data-diapo]', portada).forEach((d) => { const so = d.querySelector('source'), im = d.querySelector('img'); so.srcset = so.dataset.srcset; im.src = im.dataset.src; });
-    if (document.readyState === 'complete') carga(); else addEventListener('load', carga, { once: true });
+    // solo se descarga la siguiente foto, y cuando la página ya ha cargado (no compite con lo que se ve)
+    const carga = (d) => { if (!d || !d.hasAttribute('data-diapo')) return; d.querySelectorAll('source').forEach((so) => { so.srcset = so.dataset.srcset; }); const im = d.querySelector('img'); im.src = im.dataset.src; d.removeAttribute('data-diapo'); };
+    const empieza = () => setTimeout(() => carga(diapos[1]), 3000);
+    if (document.readyState === 'complete') empieza(); else addEventListener('load', empieza, { once: true });
     let n = 0;
     setInterval(() => {
       if (document.hidden || scrollY > innerHeight) return;
       const sig = diapos[(n + 1) % diapos.length], im = sig.querySelector('img');
-      if (!im.complete || !im.naturalWidth) return;
+      if (!im.complete || !im.naturalWidth) { carga(sig); return; }
       diapos[n].classList.remove('es-actual'); n = (n + 1) % diapos.length; sig.classList.add('es-actual');
+      carga(diapos[(n + 1) % diapos.length]);
       if (cuenta) cuenta.textContent = String(n + 1).padStart(2, '0');
     }, 6500);
   }
+
+  /* ---------- fotos con avance borroso: fundido suave al llegar ---------- */
+  $$('[data-lqip] img').forEach((im) => {
+    const ya = () => im.classList.add('cargada');
+    if (im.complete && im.naturalWidth) ya(); else { im.addEventListener('load', ya, { once: true }); im.addEventListener('error', ya, { once: true }); }
+  });
 
   /* ---------- obras: filtros, ficha de obra y visor ---------- */
   const lista = $('[data-obras]'), ficha = $('[data-ficha]'), caja = $('[data-caja]');
   const datosEl = $('#datos-obras');
   if (ficha && datosEl) {
-    const D = JSON.parse(datosEl.textContent);
+    // los datos de las fichas (todas las fotos) se piden aparte: al abrir una obra, o cuando la página ya está tranquila
+    let D = null;
+    const datos = () => (D ? Promise.resolve(D) : fetch(datosEl.dataset.url).then((r) => r.json()).then((j) => (D = j)));
+    addEventListener('load', () => setTimeout(() => datos().catch(() => {}), 4000), { once: true });
     const filtros = $$('.filtro');
     filtros.forEach((b) => b.addEventListener('click', () => {
       const c = b.dataset.cat;
@@ -139,8 +153,10 @@
     }
     function abre(id, boton) {
       desde = boton || null;
-      pinta(id);
-      if (!ficha.open) { ficha.showModal(); document.body.classList.add('sin-scroll'); }
+      datos().then(() => {
+        pinta(id);
+        if (!ficha.open) { ficha.showModal(); document.body.classList.add('sin-scroll'); }
+      });
     }
     $$('[data-obra-abrir]').forEach((b) => b.addEventListener('click', () => abre(b.dataset.obraAbrir, b)));
     $$('[data-ficha-cerrar]', ficha).forEach((b) => b.addEventListener('click', () => ficha.close()));
@@ -233,12 +249,25 @@
     visor.addEventListener('pointerup', () => (arrastre = null));
     visor.addEventListener('pointercancel', () => (arrastre = null));
     addEventListener('resize', coloca);
-    elige(tabs[0].dataset.tab, false).then(() => {
+    // la persiana se prepara cuando el antes/después se acerca (sus fotos no compiten con la portada)
+    const arranca = () => elige(tabs[0].dataset.tab, false).then(() => {
       p = 0; pinta();
       const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting) && !visto) { visto = true; ola(0, 1, 1900); io.disconnect(); } }, { threshold: .45 });
       io.observe($('[data-marco]', actual));
     });
+    if ('IntersectionObserver' in window) {
+      const cerca = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { cerca.disconnect(); arranca(); } }, { rootMargin: '700px 0px' });
+      cerca.observe(visor);
+    } else arranca();
   }
+
+  /* ---------- vídeo: la imagen de portada se carga al acercarse ---------- */
+  $$('video[data-poster]').forEach((v) => {
+    const pon = () => { v.poster = v.dataset.poster; v.removeAttribute('data-poster'); };
+    if (!('IntersectionObserver' in window)) return pon();
+    const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { io.disconnect(); pon(); } }, { rootMargin: '800px 0px' });
+    io.observe(v);
+  });
 
   /* ---------- formulario → WhatsApp ---------- */
   const f = $('[data-form]');
