@@ -300,10 +300,6 @@ html:not(.con-js) .visor__control { display: none; }
 .capitulo__n span::after { content: ''; width: 36px; height: 1px; background: currentColor; opacity: .6; }
 .capitulo h3 { font-size: clamp(3.1rem, 6.8vw, 6.8rem); font-weight: 300; line-height: .9; letter-spacing: -.035em; max-width: 11ch; }
 .capitulo__p { margin: 26px 0 34px; max-width: 42ch; color: rgba(255, 255, 255, .9); font-weight: 300; font-size: 1.08rem; }
-.tambien { max-width: var(--ancho); margin: 0 auto; padding: clamp(70px, 9vw, 130px) var(--mx) var(--sec); box-sizing: content-box; display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 20px 40px; }
-.tambien__t { font: 500 .72rem/1.8 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--tinta-2); padding-top: 6px; }
-.tambien ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 0; font: 300 clamp(1.5rem, 2.4vw, 2.2rem)/1.3 var(--serif); }
-.tambien li:not(:last-child)::after { content: '·'; margin: 0 16px; color: var(--oro); }
 
 /* ---------- nosotros ---------- */
 .nosotros { background: var(--lino); padding: var(--sec) var(--mx); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(36px, 7vw, 120px); align-items: center; }
@@ -357,6 +353,11 @@ html:not(.con-js) .visor__control { display: none; }
 .campo input:focus { outline: none; border-bottom-color: var(--tinta); }
 .campo input::placeholder { color: var(--tinta-3); opacity: .85; }
 .obra-form__error { color: var(--rojo); font-weight: 500; }
+.obra-form__fila { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 28px; }
+.obra-form__ok { color: var(--tinta); font-weight: 500; padding-left: 14px; border-left: 2px solid var(--oro); }
+.obra-form__trampa { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.obra-form button[disabled] { opacity: .6; cursor: progress; }
+@media (max-width: 560px) { .obra-form__fila { grid-template-columns: 1fr; } }
 
 /* ---------- pie ---------- */
 .pie { background: var(--noche); color: rgba(243, 239, 232, .76); padding: clamp(70px, 9vw, 120px) var(--mx) 40px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 3fr); gap: 40px; font-size: .95rem; }
@@ -391,7 +392,6 @@ html:not(.con-js) .visor__control { display: none; }
   .nosotros, .opinion, .contacto { grid-template-columns: 1fr; }
   .nosotros__foto, .opinion__video, .contacto__texto { justify-self: start; }
   .opinion__video { width: min(100%, 320px); }
-  .tambien { grid-template-columns: 1fr; }
   .pie { grid-template-columns: 1fr 1fr; }
   .pie__marca { grid-column: 1 / -1; }
 }
@@ -421,7 +421,6 @@ html:not(.con-js) .visor__control { display: none; }
   .ficha__fotos .sola { width: 100%; }
   .capitulo { min-height: 90svh; }
   .capitulo h3 { font-size: clamp(2.8rem, 13vw, 4rem); }
-  .tambien ul { font-size: 1.45rem; }
   .insta__rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .insta__pie { opacity: 1; font-size: .78rem; padding: 30px 10px 10px; }
   .cabecera--fila .boton { width: 100%; }
@@ -497,8 +496,6 @@ html:not(.con-js) .visor__control { display: none; }
   .local__texto p:not(.label) { margin-top: 18px; line-height: 1.7; }
   /* resto */
   .ficha-ad { margin-top: 26px; }
-  .tambien { padding-top: 84px; gap: 18px; }
-  .tambien ul { font-size: 1.45rem; line-height: 1.5; }
   .nosotros { gap: 56px; }
   .nosotros__texto h2 { margin-bottom: 30px; }
   .nosotros__texto p:not(.label) + p { margin-top: 20px; }

@@ -269,23 +269,51 @@
     io.observe(v);
   });
 
-  /* ---------- formulario → WhatsApp ---------- */
+  /* ---------- formulario → correo del cliente (FormSubmit) ----------
+     17-nov: las solicitudes llegan a su correo, en castellano, con el correo del visitante como «responder a».
+     Si FormSubmit falla (o aún no está activado), se abre el correo del visitante con la solicitud escrita. */
   const f = $('[data-form]');
   if (f) {
-    const err = $('[data-error]', f);
-    f.addEventListener('submit', (e) => {
+    const err = $('[data-error]', f), ok = $('[data-ok]', f), btn = $('button[type="submit"]', f), btnT = $('.boton__t', btn);
+    const IDIOMA = { es: 'Español', nb: 'Noruego', en: 'Inglés' };
+    let enviando = false;
+    f.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (enviando) return;
       const v = (n) => (f.elements[n]?.value || '').trim();
-      const tipo = (f.querySelector('input[name="tipo"]:checked') || {}).value || '';
-      const cuando = (f.querySelector('input[name="cuando"]:checked') || {}).value || '';
-      if (!tipo || v('lugar').length < 2) { err.hidden = false; return; }
+      const tipo = f.querySelector('input[name="tipo"]:checked'), cuando = f.querySelector('input[name="cuando"]:checked');
+      const mail = v('email');
+      if (!tipo || v('lugar').length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) { err.hidden = false; ok.hidden = true; return; }
       err.hidden = true;
-      const txt = f.dataset.plantilla.replace('{tipo}', tipo).replace('{lugar}', v('lugar')).replace('{cuando}', cuando).replace('{nombre}', v('nombre') || '—');
-      window.open(`https://wa.me/${f.dataset.tel}?text=${encodeURIComponent(txt)}`, '_blank', 'noopener');
+      if (v('_honey')) return;   // trampa para robots
+      const txt = f.dataset.plantilla.replace('{tipo}', tipo.value).replace('{lugar}', v('lugar')).replace('{cuando}', cuando ? cuando.value : '—')
+        .replace('{nombre}', v('nombre') || '—').replace('{correo}', mail).replace('{tel}', v('tel') || '—');
+      const correo = f.dataset.correo;
+      const porCorreo = () => { location.href = `mailto:${correo}?subject=${encodeURIComponent(f.dataset.asunto)}&body=${encodeURIComponent(txt)}`; };
+      const antes = btnT.textContent;
+      enviando = true; btn.disabled = true; btnT.textContent = f.dataset.enviando; ok.hidden = true;
+      try {
+        const r = await fetch(`https://formsubmit.co/ajax/${correo}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            _subject: `Nueva solicitud desde la web: ${tipo.dataset.es} en ${v('lugar')}`, _template: 'table', _replyto: mail,
+            Nombre: v('nombre') || '—', email: mail, 'Teléfono': v('tel') || '—', Obra: tipo.dataset.es, Lugar: v('lugar'),
+            'Para cuándo': cuando ? cuando.dataset.es : '—', 'Idioma de la web': IDIOMA[document.documentElement.lang] || document.documentElement.lang,
+          }),
+        });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok || String(d.success) !== 'true') throw new Error(d.message || String(r.status));
+        f.reset(); ok.textContent = f.dataset.ok; ok.hidden = false;
+      } catch (_) {
+        ok.textContent = f.dataset.fallo; ok.hidden = false;
+        setTimeout(porCorreo, 900);
+      } finally {
+        enviando = false; btn.disabled = false; btnT.textContent = antes;
+      }
     });
   }
 
-  /* móvil: la barra de WhatsApp aparece cuando los botones de la portada ya no se ven */
+  /* móvil: la barra de contacto aparece cuando los botones de la portada ya no se ven */
   const barra = $('.barra'), acciones = $('.portada__acciones');
   if (barra && acciones && 'IntersectionObserver' in window) new IntersectionObserver((es) => barra.classList.toggle('es-visible', !es[0].isIntersecting)).observe(acciones);
   else if (barra) barra.classList.add('es-visible');
