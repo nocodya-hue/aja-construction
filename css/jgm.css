@@ -221,6 +221,8 @@ button.boton { font-family: var(--sans); }
 .ficha__fotos .ancha img { aspect-ratio: 3 / 2; }
 .ficha__fotos button:hover img { transform: scale(1.03); }
 .ficha__fotos button:focus-visible { outline: 2px solid var(--oro); outline-offset: 3px; }
+/* 18-nov: vídeos del cliente dentro de la ficha */
+.ficha__fotos .video video { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: var(--lino); }
 .ficha__siguiente { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 6px 20px; width: calc(100% - 2 * var(--mx)); max-width: var(--ancho); margin: clamp(70px, 9vw, 130px) auto 0; padding-top: 34px; border-top: 1px solid var(--linea); }
 .ficha__siguiente .label { grid-column: 1 / -1; margin: 0; }
 .ficha__siguiente-t { font: 300 clamp(2.2rem, 4.6vw, 4.2rem)/1 var(--serif); letter-spacing: -.025em; }

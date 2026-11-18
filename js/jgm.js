@@ -123,7 +123,7 @@
 
     const cuerpo = $('[data-ficha-cuerpo]', ficha);
     const pon = (sel, txt) => { const e = $(sel, ficha); if (e) e.textContent = txt; };
-    let actual = null, desde = null, ioF = null;
+    let actual = null, desde = null, ioF = null, ioV = null;
     const srcImg = (f, sizes) => `srcset="${f.s}" sizes="${sizes}" src="${f.j}"`;
     function pinta(id) {
       const p = D.obras.find((x) => x.id === id); if (!p) return;
@@ -133,7 +133,7 @@
       pon('[data-ficha-cat]', p.cat); pon('[data-ficha-t]', p.t); pon('[data-ficha-mini]', p.t);
       pon('[data-ficha-lugar]', p.lugar); $('[data-fila-lugar]', ficha).hidden = !p.lugar;
       pon('[data-ficha-tipo]', p.cat); pon('[data-ficha-of]', p.of.join(' · ')); $('[data-fila-of]', ficha).hidden = !p.of.length;
-      pon('[data-ficha-n]', String(p.fotos.length));
+      pon('[data-ficha-n]', p.n || String(p.fotos.length));
       // fotos: apaisadas a todo el ancho, verticales por parejas; una vertical suelta, centrada
       const resto = p.fotos.map((f, i) => ({ ...f, i })).slice(1);
       const items = []; let par = [];
@@ -142,6 +142,19 @@
       suelta();
       const ul = $('[data-ficha-fotos]', ficha);
       ul.innerHTML = items.map(({ f, c }) => `<li class="${c}"><button type="button" data-f="${f.i}" aria-label="${esc(D.ampliar)} · ${f.i + 1}/${p.fotos.length}"><img ${srcImg(f, c === 'ancha' ? '(min-width: 1400px) 1320px, 100vw' : '(min-width: 900px) 50vw, 100vw')} alt="${esc(p.t)} · ${f.i + 1}" loading="lazy" decoding="async"></button></li>`).join('');
+      // 18-nov: vídeos del cliente al final de la ficha (por parejas; uno solo, centrado). Sin sonido, se cargan al acercarse
+      // y solo se reproducen mientras se ven.
+      const vs = p.videos || [];
+      ul.insertAdjacentHTML('beforeend', vs.map((v) => `<li class="video${vs.length === 1 ? ' sola' : ''}"><video muted loop playsinline preload="none" disableremoteplayback poster="${v.p}" data-fv="${v.v}" aria-label="${esc(p.t)}"></video></li>`).join(''));
+      if (ioV) ioV.disconnect();
+      const fvs = $$('video[data-fv]', ul);
+      if (fvs.length && 'IntersectionObserver' in window) {
+        ioV = new IntersectionObserver((es) => es.forEach((x) => {
+          const v = x.target;
+          if (x.isIntersecting) { if (!v.getAttribute('src')) v.src = v.dataset.fv; if (!reduce) v.play().catch(() => {}); } else if (!v.paused) v.pause();
+        }), { root: cuerpo, threshold: 0.25 });
+        fvs.forEach((v) => { ioV.observe(v); if (reduce) v.controls = true; });
+      } else fvs.forEach((v) => { v.src = v.dataset.fv; v.controls = true; });
       if (ioF) ioF.disconnect();
       if ('IntersectionObserver' in window && !reduce) {
         ioF = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { x.target.classList.add('visto'); ioF.unobserve(x.target); } }), { root: cuerpo, rootMargin: '0px 0px -6% 0px' });
@@ -161,7 +174,7 @@
     $$('[data-obra-abrir]').forEach((b) => b.addEventListener('click', () => abre(b.dataset.obraAbrir, b)));
     $$('[data-ficha-cerrar]', ficha).forEach((b) => b.addEventListener('click', () => ficha.close()));
     $('[data-ficha-sig]', ficha).addEventListener('click', (e) => pinta(e.currentTarget.dataset.id));
-    ficha.addEventListener('close', () => { document.body.classList.remove('sin-scroll'); desde?.focus(); });
+    ficha.addEventListener('close', () => { document.body.classList.remove('sin-scroll'); $$('video[data-fv]', ficha).forEach((v) => v.pause()); desde?.focus(); });
     cuerpo.addEventListener('scroll', () => ficha.classList.toggle('con-scroll', cuerpo.scrollTop > 320), { passive: true });
 
     // visor a pantalla completa de las fotos de la obra
